@@ -310,10 +310,13 @@ while True:
 										temp = colors.cps2
 										if(event.pos[0] >= scr.width-(16*2)):
 											temp = colors.cps3
-							if (event.pos[1]/16 <= len(temp)):
-								var.g.fg = temp[int(event.pos[1]/16)]
-
-								print()
+							if ((event.pos[1]+1)/16 <= len(temp)):
+								try:
+									var.g.fg = temp[int((event.pos[1])/16)]
+								except:
+									print("New but")
+								print(int((event.pos[1])/16))
+								print(event.pos[1])
 							else:
 								var.g.fg = color(0,0,0)
 			elif(event.button == 3):
