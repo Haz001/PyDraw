@@ -78,7 +78,7 @@ class win:
 				print("¯\\_(ツ)_/¯")
 			def draw(self,can,xo = 0,yo = 0):
 				can.drawstring(self.text,self.x + xo,self.y + yo)
-	
+
 	class opt(object):
 		can = None
 		x = 0
@@ -97,7 +97,6 @@ class win:
 			self.can = can
 			self.name = name
 		def add(self,item):
-			print(self.name+" added "+item.text)
 			self.items.append(item)
 		def draw(self):
 			#print(self.name+" - "+str(self.enabled))
@@ -183,36 +182,34 @@ scr = win.canvas(1000,700)
 class var:
 	g = grid(4,4,color(0,0,0))
 	settings = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Settings")
-	custom = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Custom")
+	
 ## button functions
 class btnfunc:
 	def c16():
-		for i in range(len(var.settings.items)):
-			print(var.settings.items[i].text)
+
 		var.g = grid(16,16,color(0,0,0))
 		var.settings.enabled = False
-		var.custom.enabled = False
+		
 		print("16")
 	def c32():
 		var.g = grid(32,32,color(0,0,0))
 		var.settings.enabled = False
-		var.custom.enabled = False
+		
 		print("32")
 	def c64():
 		var.g = grid(64,64,color(0,0,0))
 		var.settings.enabled = False
-		var.custom.enabled = False
-		print("64")
+		
 	def c128():
 		var.g = grid(128,128,color(0,0,0))
 		var.settings.enabled = False
-		var.custom.enabled = False
+		
 		print("128")
 	def c256():
 
 		var.g = grid(256,256,color(0,0,0))
 		var.settings.enabled = False
-		var.custom.enabled = False
+		
 		print("256")
 class this:
 	g = grid(4,4,color(0,0,0))
@@ -222,17 +219,18 @@ class this:
 
 		def setup():
 			#form = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr)
+			var.settings.add(win.input.btn(0,0,256,32,"Create Custom",this.settings.cust ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 16x16",btnfunc.c16 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 32x32",btnfunc.c32 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 64x64",btnfunc.c64 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 128x128",btnfunc.c128 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
-			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
+			
 
 			var.settings.enabled = True
 		def cust():
-			var.settings.enabled = False
-			var.custom.enabled = True
+			this.custom.setup()
+			
 	class custom():
 		def xadd():
 			plc = this.custom
@@ -250,23 +248,36 @@ class this:
 			plc = this.custom
 			plc.y -=1
 			plc.update()
+		def make():
+			plc = this.custom
+			x = plc.x
+			y = plc.y
+			var.g = grid(x,y,color(0,0,0))
+			var.settings.enabled = False
+			
 		x = 32
 		y = 32
 		sizelb = win.input.label(0,0,256,32,"32x32",(255,255,255))
 		def update():
 			plc = this.custom
 			plc.sizelb.text = str(plc.x)+"x"+str(plc.y)
+		def setup():
+			var.settings.items = []
+			
+			var.settings.add(this.custom.sizelb)
+			var.settings.add(win.input.btn(0,0,256,32,"+x",this.custom.xadd ))
+			var.settings.add(win.input.btn(0,0,256,32,"-x",this.custom.xsub ))
+			var.settings.add(win.input.btn(0,0,256,32,"+y",this.custom.yadd ))
+			var.settings.add(win.input.btn(0,0,256,32,"-y",this.custom.ysub ))
+			var.settings.add(win.input.btn(0,0,256,32,"Make Custom",this.custom.make ))
 this.settings.setup()
 
 
  
-var.custom.enabled = False
-var.custom.add(this.custom.sizelb)
-var.custom.add(win.input.btn(0,0,256,32,"+x",this.custom.xadd ))
-var.custom.add(win.input.btn(0,0,256,32,"-x",this.custom.xsub ))
-var.custom.add(win.input.btn(0,0,256,32,"+y",this.custom.yadd ))
-var.custom.add(win.input.btn(0,0,256,32,"-y",this.custom.ysub ))
-var.custom.add(win.input.btn(0,0,256,32,"Make Custom",this.custom.ysub ))
+
+for i in range(len(var.settings.items)):
+	print(var.settings.items[i].text)
+
 import time
 t = time.time()
 fps = []
