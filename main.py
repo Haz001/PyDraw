@@ -22,7 +22,7 @@ class win:
 		def __init__(self,width,height):
 			self.width = width
 			self.height = height
-			self.scr = pygame.display.set_mode((width,height))
+			self.scr = pygame.display.set_mode((width,height),pygame.RESIZABLE)
 		def drawrec(self,x,y,width,height,c):
 			if str(type(c)) == "<class '__main__.color'>":
 				col = (c.red,c.green,c.blue)
@@ -53,13 +53,32 @@ class win:
 				self.call = call
 				self.c = c
 			def check(self,pointer):
-
 				if (pointer[0] >= self.x) and (pointer[0] <= self.x+self.width):
 					if (pointer[1] >= self.y) and (pointer[1] <= self.y+self.height):
 						self.call()
 			def draw(self,can,xo = 0,yo = 0):
 				can.drawrec(self.x+xo,self.y+yo,self.width,self.height,self.c)
 				can.drawstring(self.text,self.x + xo,self.y + yo)
+		class label(object):
+			x = 0
+			y = 0
+			width = 0
+			heigth = 0
+			text = ""
+			c = color(114,137,218)
+			def __init__(self,x,y,width,height,text,c=color(114,137,218)):
+				self.x = x
+				self.y = y
+				self.width = width
+				self.height = height
+				self.text = text
+				
+				self.c = c
+			def check(self,pointer):
+				print("¯\\_(ツ)_/¯")
+			def draw(self,can,xo = 0,yo = 0):
+				can.drawstring(self.text,self.x + xo,self.y + yo)
+	
 	class opt(object):
 		can = None
 		x = 0
@@ -68,23 +87,30 @@ class win:
 		width = 0
 		items = []
 		enabled = False
-		def __init__(self,x,y,height,width,can):
+		name = ""
+		def __init__(self,x,y,height,width,can,name):
 			self.height = height
 			self.width = width
 			self.x = x
 			self.y = y
-			self.enabled = True
+			self.enabled = False
 			self.can = can
+			self.name = name
 		def add(self,item):
+			print(self.name+" added "+item.text)
 			self.items.append(item)
 		def draw(self):
-			self.can.drawrec(self.x,self.y,self.width,self.height,color(44,47,51))
-			for i in range(len(self.items)):
-				self.items[i].draw(self.can,self.x,self.y+((self.items[i].height+2)*i))
+			#print(self.name+" - "+str(self.enabled))
+			if self.enabled:
+				#print(self.name+" - draw")
+				self.can.drawrec(self.x,self.y,self.width,self.height,color(44,47,51))
+				for i in range(len(self.items)):
+					self.items[i].draw(self.can,self.x,self.y+((self.items[i].height+2)*i))
 		def check(self,pos):
 			for i in range(len(self.items)):
 				self.items[i].check([pos[0]-self.x,pos[1]-(self.y+((self.items[i].height+2)*i))])
 class grid(object):
+	paint = False
 	grid = {}
 	fg = color(255,255,255)
 	bg = color(255,255,255)
@@ -137,7 +163,6 @@ class grid(object):
 				for c in range(3):
 					if c == 0:
 						r = int(data[cou])
-
 					elif c == 1:
 						g  = int(data[cou])
 					elif c == 2:
@@ -157,30 +182,91 @@ class colors:
 scr = win.canvas(1000,700)
 class var:
 	g = grid(4,4,color(0,0,0))
-	settings = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr)
+	settings = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Settings")
+	custom = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Custom")
 ## button functions
 class btnfunc:
+	def c16():
+		for i in range(len(var.settings.items)):
+			print(var.settings.items[i].text)
+		var.g = grid(16,16,color(0,0,0))
+		var.settings.enabled = False
+		var.custom.enabled = False
+		print("16")
 	def c32():
 		var.g = grid(32,32,color(0,0,0))
 		var.settings.enabled = False
+		var.custom.enabled = False
 		print("32")
 	def c64():
 		var.g = grid(64,64,color(0,0,0))
 		var.settings.enabled = False
+		var.custom.enabled = False
 		print("64")
 	def c128():
 		var.g = grid(128,128,color(0,0,0))
 		var.settings.enabled = False
+		var.custom.enabled = False
 		print("128")
 	def c256():
 
 		var.g = grid(256,256,color(0,0,0))
 		var.settings.enabled = False
+		var.custom.enabled = False
 		print("256")
-var.settings.add(win.input.btn(0,0,256,32,"Create 32x32",btnfunc.c32 ))
-var.settings.add(win.input.btn(0,0,256,32,"Create 64x64",btnfunc.c64 ))
-var.settings.add(win.input.btn(0,0,256,32,"Create 128x128",btnfunc.c128 ))
-var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
+class this:
+	g = grid(4,4,color(0,0,0))
+	
+	class settings:
+		form = None
+
+		def setup():
+			#form = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr)
+			var.settings.add(win.input.btn(0,0,256,32,"Create 16x16",btnfunc.c16 ))
+			var.settings.add(win.input.btn(0,0,256,32,"Create 32x32",btnfunc.c32 ))
+			var.settings.add(win.input.btn(0,0,256,32,"Create 64x64",btnfunc.c64 ))
+			var.settings.add(win.input.btn(0,0,256,32,"Create 128x128",btnfunc.c128 ))
+			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
+			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
+
+			var.settings.enabled = True
+		def cust():
+			var.settings.enabled = False
+			var.custom.enabled = True
+	class custom():
+		def xadd():
+			plc = this.custom
+			plc.x +=1
+			plc.update()
+		def xsub():
+			plc = this.custom
+			plc.x -=1
+			plc.update()
+		def yadd():
+			plc = this.custom
+			plc.y +=1
+			plc.update()
+		def ysub():
+			plc = this.custom
+			plc.y -=1
+			plc.update()
+		x = 32
+		y = 32
+		sizelb = win.input.label(0,0,256,32,"32x32",(255,255,255))
+		def update():
+			plc = this.custom
+			plc.sizelb.text = str(plc.x)+"x"+str(plc.y)
+this.settings.setup()
+
+
+ 
+var.custom.enabled = False
+var.custom.add(this.custom.sizelb)
+var.custom.add(win.input.btn(0,0,256,32,"+x",this.custom.xadd ))
+var.custom.add(win.input.btn(0,0,256,32,"-x",this.custom.xsub ))
+var.custom.add(win.input.btn(0,0,256,32,"+y",this.custom.yadd ))
+var.custom.add(win.input.btn(0,0,256,32,"-y",this.custom.ysub ))
+var.custom.add(win.input.btn(0,0,256,32,"Make Custom",this.custom.ysub ))
 import time
 t = time.time()
 fps = []
@@ -194,10 +280,11 @@ while True:
 				if (var.settings.enabled == True):
 					var.settings.check(event.pos)
 				elif (var.settings.enabled == False):
-					print(event.pos)
+
+					
 					if(event.pos[0] <= scr.width-(16*4)):
-						if(event.pos[1] <= 512):
-							var.g.set(int(event.pos[0]/pxl),int(event.pos[1]/pxl))
+						var.g.paint = True
+						
 					if(event.pos[0] >= scr.width-(16*5)):
 						if(event.pos[1] <= scr.width):
 							temp = cps
@@ -233,11 +320,34 @@ while True:
 					pxl = pxl/2
 			else:
 				print (event.button)
+		elif event.type == pygame.MOUSEBUTTONUP:
+			if event.button == 1:
+				if (var.settings.enabled == True):
+					var.settings.check(event.pos)
+				elif (var.settings.enabled == False):
+					var.g.paint = False
 	pygame.draw.rect(scr.scr,(35,39,42),pygame.Rect(0,0,scr.width,scr.height))
 	for x in range(int(var.g.width)):
 		for y in range(int(var.g.height)):
 			c = var.g.get_tuple(x,y)
 			scr.drawrec(x*pxl,y*pxl,1*pxl,1*pxl,c)
+			mx = pygame.mouse.get_pos()[0]
+			my = pygame.mouse.get_pos()[1]
+			if( mx > x*pxl and mx <(x*pxl + pxl) ):
+				if( my > y*pxl and my <(y*pxl + pxl) ):
+					if (var.g.paint):
+						c = var.g.get_tuple(x,y)
+						var.g.set(int(event.pos[0]/pxl),int(event.pos[1]/pxl))
+						scr.drawrec(x*pxl,y*pxl,1*pxl,1*pxl,c)
+
+					ic = (255-c[0],255-c[1],255-c[2])
+					for b in range(3):
+						if(c[b] >112 and c[b] <144):
+							if (c[b]< 128):
+								ic[b]+= 32
+					scr.drawrec(x*pxl+int(pxl*0.25),y*pxl + int(pxl*0.25),int(pxl*0.5),int(pxl*0.5),(255-c[0],255-c[1],255-c[2]))
+					
+
 	c = 0
 	for y in range(int(scr.height/8)):
 		for x in range(16):
@@ -252,6 +362,8 @@ while True:
 			if c in range(len(colors.cps3)):
 				scr.drawrec(scr.width-16*(1),y*16,16,16,colors.cps3[c])
 		c+=1
-	if(var.settings.enabled == True):
-		var.settings.draw()
+	
+	var.settings.draw()
+	
+	##var.custom.draw()
 	pygame.display.update()
