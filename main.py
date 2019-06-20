@@ -182,14 +182,13 @@ scr = win.canvas(1000,700)
 class var:
 	g = grid(4,4,color(0,0,0))
 	settings = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Settings")
-	
+	custom = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Cool")
+	save = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr,"Save")
 ## button functions
 class btnfunc:
 	def c16():
-
 		var.g = grid(16,16,color(0,0,0))
 		var.settings.enabled = False
-		
 		print("16")
 	def c32():
 		var.g = grid(32,32,color(0,0,0))
@@ -213,11 +212,10 @@ class btnfunc:
 		print("256")
 class this:
 	g = grid(4,4,color(0,0,0))
-	
+	click = False
 	class settings:
-		form = None
-
 		def setup():
+			var.settings.items = []
 			#form = win.opt(scr.width/2-128,scr.height/2-128,256,256,scr)
 			var.settings.add(win.input.btn(0,0,256,32,"Create Custom",this.settings.cust ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 16x16",btnfunc.c16 ))
@@ -225,12 +223,27 @@ class this:
 			var.settings.add(win.input.btn(0,0,256,32,"Create 64x64",btnfunc.c64 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 128x128",btnfunc.c128 ))
 			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
-			
-
-			var.settings.enabled = True
+			var.settings.enabled = False
 		def cust():
 			this.custom.setup()
-			
+			var.settings.enabled = False
+			var.custom.enabled = True
+	class save:
+		def setup():
+			var.save.items = []
+			var.save.add(win.input.btn(0,0,256,32,"New",this.save.new ))
+			var.save.add(win.input.btn(0,0,256,32,"Save",btnfunc.c16 ))
+			var.save.add(win.input.btn(0,0,256,32,"Open",btnfunc.c32 ))
+			var.save.add(win.input.btn(0,0,256,32,"Settings",btnfunc.c64 ))
+			var.save.add(win.input.btn(0,0,256,32,"Exit",this.save.exit ))
+			var.save.add(win.input.btn(0,0,256,32,"Force Exit",exit))
+			var.save.enabled = True
+		def new():
+			this.settings.setup()
+			var.save.enabled = False
+			var.settings.enabled = True
+		def exit():
+			exit()
 	class custom():
 		def xadd():
 			plc = this.custom
@@ -253,7 +266,7 @@ class this:
 			x = plc.x
 			y = plc.y
 			var.g = grid(x,y,color(0,0,0))
-			var.settings.enabled = False
+			var.custom.enabled = False
 			
 		x = 32
 		y = 32
@@ -262,15 +275,20 @@ class this:
 			plc = this.custom
 			plc.sizelb.text = str(plc.x)+"x"+str(plc.y)
 		def setup():
-			var.settings.items = []
+			var.custom.items = []
 			
-			var.settings.add(this.custom.sizelb)
-			var.settings.add(win.input.btn(0,0,256,32,"+x",this.custom.xadd ))
-			var.settings.add(win.input.btn(0,0,256,32,"-x",this.custom.xsub ))
-			var.settings.add(win.input.btn(0,0,256,32,"+y",this.custom.yadd ))
-			var.settings.add(win.input.btn(0,0,256,32,"-y",this.custom.ysub ))
-			var.settings.add(win.input.btn(0,0,256,32,"Make Custom",this.custom.make ))
+			var.custom.add(this.custom.sizelb)
+			var.custom.add(win.input.btn(0,0,256,32,"+x",this.custom.xadd ))
+			var.custom.add(win.input.btn(0,0,256,32,"-x",this.custom.xsub ))
+			var.custom.add(win.input.btn(0,0,256,32,"+y",this.custom.yadd ))
+			var.custom.add(win.input.btn(0,0,256,32,"-y",this.custom.ysub ))
+			var.custom.add(win.input.btn(0,0,256,32,"Make Custom",this.custom.make ))
+this.custom.setup()
 this.settings.setup()
+this.save.setup()
+
+class bubbles:
+	array = []
 
 
  
@@ -288,43 +306,45 @@ while True:
 			quit()
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			if event.button == 1:
-				if (var.settings.enabled == True):
-					var.settings.check(event.pos)
-				elif (var.settings.enabled == False):
-
+				if this.click == False:
+					if (var.settings.enabled == True):
+						var.settings.check(event.pos)
+					elif (var.custom.enabled == True):
+						var.custom.check(event.pos)
+					elif (var.save.enabled == True):
+						var.save.check(event.pos)
+					this.click=True
+				if(event.pos[0] <= scr.width-(16*4)):
+					var.g.paint = True
 					
-					if(event.pos[0] <= scr.width-(16*4)):
-						var.g.paint = True
-						
-					if(event.pos[0] >= scr.width-(16*5)):
-						if(event.pos[1] <= scr.width):
-							temp = cps
-							##<summary>
-							##Stupidly long way to choose which line of color
-							##</summary>
-							if(event.pos[0] >= scr.width-(16*4)):
-								temp = colors.cps0
-								if(event.pos[0] >= scr.width-(16*3)):
-									temp = colors.cps1
-									if(event.pos[0] >= scr.width-(16*2)):
-										temp = colors.cps2
-										if(event.pos[0] >= scr.width-(16*2)):
-											temp = colors.cps3
-							if ((event.pos[1]+1)/16 <= len(temp)):
-								try:
-									var.g.fg = temp[int((event.pos[1])/16)]
-								except:
-									print("New but")
-								print(int((event.pos[1])/16))
-								print(event.pos[1])
-							else:
-								var.g.fg = color(0,0,0)
+				if(event.pos[0] >= scr.width-(16*5)):
+					if(event.pos[1] <= scr.width):
+						temp = cps
+						##<summary>
+						##Stupidly long way to choose which line of color
+						##</summary>
+						if(event.pos[0] >= scr.width-(16*4)):
+							temp = colors.cps0
+							if(event.pos[0] >= scr.width-(16*3)):
+								temp = colors.cps1
+								if(event.pos[0] >= scr.width-(16*2)):
+									temp = colors.cps2
+									if(event.pos[0] >= scr.width-(16*1)):
+										temp = colors.cps3
+						if ((event.pos[1]+1)/16 <= len(temp)):
+							try:
+								var.g.fg = temp[int((event.pos[1])/16)]
+							except:
+								print("Error")
+							print(int((event.pos[1])/16))
+							print(event.pos[1])
+						else:
+							var.g.fg = color(0,0,0)
 			elif(event.button == 3):
-				#g.save("cool")
-				#var.g = grid(32,32,color(40,50,60))
+				
 				hello()
 			elif(event.button == 2):
-				#var.g.read("cool")
+
 				hello()
 			elif(event.button == 4):
 				pxl = pxl*2
@@ -335,6 +355,7 @@ while True:
 			else:
 				print (event.button)
 		elif event.type == pygame.MOUSEBUTTONUP:
+			this.click = False
 			if event.button == 1:
 				if (var.settings.enabled == True):
 					var.settings.check(event.pos)
@@ -376,8 +397,24 @@ while True:
 			if c in range(len(colors.cps3)):
 				scr.drawrec(scr.width-16*(1),y*16,16,16,colors.cps3[c])
 		c+=1
-	
-	var.settings.draw()
-	
-	##var.custom.draw()
+	for i in range(len(bubbles.array)):
+		point = bubbles.array[i]
+		s = pygame.Surface((2,2), pygame.SRCALPHA)  # the size of your rect
+		a =int( (i/len(bubbles.array))*128)
+		#s.set_alpha(a)                # alpha level
+		s.fill((255,255,255,a))           # this fills the entire surface
+		scr.scr.blit(s, (point[0],point[1]))    # (0,0) are the top-left coordinates
+
+	mx = pygame.mouse.get_pos()[0]
+	my = pygame.mouse.get_pos()[1]
+	bubbles.array.append((mx,my))
+	if len(bubbles.array)>15:
+		bubbles.array.pop(0)
+
+	if var.settings.enabled:
+		var.settings.draw()
+	if var.custom.enabled:
+		var.custom.draw()
+	if var.save.enabled:
+		var.save.draw()
 	pygame.display.update()
