@@ -78,6 +78,7 @@ class win:
 				print("¯\\_(ツ)_/¯")
 			def draw(self,can,xo = 0,yo = 0):
 				can.drawstring(self.text,self.x + xo,self.y + yo)
+<<<<<<< HEAD
 		class txtbox(object):
 			x = 0
 			y = 0
@@ -97,6 +98,8 @@ class win:
 				print("¯\\_(ツ)_/¯")
 			def draw(self,can,xo = 0,yo = 0):
 				can.drawstring(self.text,self.x + xo,self.y + yo)
+=======
+>>>>>>> 185143178f7fdc58810afef91514d30729f5b93b
 
 	class opt(object):
 		can = None
@@ -229,8 +232,11 @@ class btnfunc:
 		var.settings.enabled = False
 		
 		print("256")
+<<<<<<< HEAD
 	def none():
 		print("¯\_(ツ)_/¯")
+=======
+>>>>>>> 185143178f7fdc58810afef91514d30729f5b93b
 class this:
 	g = grid(4,4,color(0,0,0))
 	click = False
@@ -246,13 +252,18 @@ class this:
 			var.settings.add(win.input.btn(0,0,256,32,"Create 256x256",btnfunc.c256 ))
 			var.settings.enabled = False
 		def cust():
+<<<<<<< HEAD
 #			this.custom.setup()
+=======
+			this.custom.setup()
+>>>>>>> 185143178f7fdc58810afef91514d30729f5b93b
 			var.settings.enabled = False
 			var.custom.enabled = True
 	class save:
 		def setup():
 			var.save.items = []
 			var.save.add(win.input.btn(0,0,256,32,"New",this.save.new ))
+<<<<<<< HEAD
 			var.save.add(win.input.btn(0,0,256,32,"Save",btnfunc.none ))
 			var.save.add(win.input.btn(0,0,256,32,"Open", btnfunc.none))
 			var.save.add(win.input.btn(0,0,256,32,"Settings",btnfunc.none ))
@@ -269,6 +280,19 @@ class this:
 			var.settings.enabled = True
 		def exit():
 			print("Exitting")
+=======
+			var.save.add(win.input.btn(0,0,256,32,"Save",btnfunc.c16 ))
+			var.save.add(win.input.btn(0,0,256,32,"Open",btnfunc.c32 ))
+			var.save.add(win.input.btn(0,0,256,32,"Settings",btnfunc.c64 ))
+			var.save.add(win.input.btn(0,0,256,32,"Exit",this.save.exit ))
+			var.save.add(win.input.btn(0,0,256,32,"Force Exit",exit))
+			var.save.enabled = True
+		def new():
+			this.settings.setup()
+			var.save.enabled = False
+			var.settings.enabled = True
+		def exit():
+>>>>>>> 185143178f7fdc58810afef91514d30729f5b93b
 			exit()
 	class custom():
 		def xadd():
@@ -383,6 +407,7 @@ while True:
 		elif event.type == pygame.MOUSEBUTTONUP:
 			this.click = False
 			if event.button == 1:
+<<<<<<< HEAD
 				var.g.paint = False
 		elif event.type == pygame.KEYDOWN:
 			print(event.key)
@@ -391,6 +416,12 @@ while True:
 				var.settings.enabled == False
 				var.save.enabled = True
 				print("Menu")
+=======
+				if (var.settings.enabled == True):
+					var.settings.check(event.pos)
+				elif (var.settings.enabled == False):
+					var.g.paint = False
+>>>>>>> 185143178f7fdc58810afef91514d30729f5b93b
 	pygame.draw.rect(scr.scr,(35,39,42),pygame.Rect(0,0,scr.width,scr.height))
 	for x in range(int(var.g.width)):
 		for y in range(int(var.g.height)):
